@@ -4,6 +4,7 @@
 
 using namespace std;
 string DectoBin(char letra);
+string codificar(string grupo);
 
 int main()
 {
@@ -40,6 +41,10 @@ int main()
 
     cout<<palabraBinaria<<endl;
 
+    //for (int i=0; i<palabraBinaria.length()/4; i++){
+
+    //}
+
     // Se cierra el archivo abierto
     infile.close();
 
@@ -61,4 +66,12 @@ string DectoBin(char letra){
         }
     }
     return binario;
+}
+
+string codificar(string grupo){//toma el ultimo dato y lo pone al incicio
+    string nuevo=grupo.substr(0,3);//extrae desde la posicion o a la 3
+    string nuevoFinal=grupo.at(3)+nuevo;//toma el ultimo valor y lo pone al inicio
+    return nuevoFinal;
+
+
 }
