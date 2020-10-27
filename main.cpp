@@ -5,6 +5,7 @@
 using namespace std;
 string DectoBin(char letra);
 string codificar(string grupo);
+void mostrar(string palabra);
 
 int main()
 {
@@ -36,15 +37,23 @@ int main()
     for (unsigned int i = 0; i < data.length(); i++) {
         cout << data.at(i) << endl;
 
-        palabraBinaria=palabraBinaria+"|"+DectoBin(data.at(i));
+        palabraBinaria=palabraBinaria+DectoBin(data.at(i));
     }
 
-    cout<<palabraBinaria<<endl;
+    mostrar(palabraBinaria);
 
-    //for (int i=0; i<palabraBinaria.length()/4; i++){
 
-    //}
+    string palabraCodificada="";
+    for (int i=0; i<palabraBinaria.length()/4; i++){//la longitud de palabra binaria se divide entre 4, por que se sabe que se van a tomar de a 4 caracteres.para que en la ultima teracion el string tenga las posiciones necesarias para ietrar
 
+
+        string palabra_="";
+        for (int j=i*4;j<((i*4)+4);j++){
+            palabra_=palabra_+palabraBinaria.at(j);
+        }
+        palabraCodificada=palabraCodificada+"|"+codificar(palabra_);
+    }
+    cout << palabraCodificada;
     // Se cierra el archivo abierto
     infile.close();
 
@@ -74,4 +83,19 @@ string codificar(string grupo){//toma el ultimo dato y lo pone al incicio
     return nuevoFinal;
 
 
+}
+
+void mostrar(string palabra){
+
+    cout<<endl;
+    for(int i=0; i<palabra.length()/8;i++){
+
+        string palabra_="";
+        for (int j=i*8;j<((i*8)+8);j++){
+            palabra_=palabra_+palabra.at(j);
+        }
+        //string palabra_=palabra.substr(8,16);
+        cout<<palabra_<<"|";
+
+        }
 }
