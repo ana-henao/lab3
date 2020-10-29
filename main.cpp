@@ -62,7 +62,47 @@ int main()
     infile.close();
     //cout << user<< endl;
     //cout << contra<< endl;
+//menu
+    int opcion;
+    int cedu;
+    int clave;
+    int saldo;
+    int cedula;
+    int con;
+    int opci;
+    cout << "bienvenido al cajero.";
+    cout<<"menu: "<< endl;
+    cout <<"Desea ingresar como: 1.Administrador   2.Usuario";
+    cin >> opcion;
+    while (opcion=='1' or opcion=='2'){
+        if(opcion=='1'){
+            cout << "registro de usuarios: ";
+            cout << "Ingrese la cedula del usuario: "<< endl;
+            cin >> cedu;
+            cout << "Ingrese la clave del usuario: " << endl;
+            cin >> clave;
+            cout << "Ingrese el saldo del usuario: "<< endl;
+            cin >> saldo;
 
+        }
+        else if(opcion=='2'){
+            cout << "Ingrese al sistema: "<< endl;
+            cout << "Ingrese su numero de cedula: ";
+            cin >> cedula;
+            cout << "Ingrese su clave: "<< endl;
+            cin >> con;
+            cout << "acceso aceptado.";
+            cout << "opciones: 1.Consutar saldo  2.Retirar dinero"<< endl;
+            cin >> opci;
+            if (opci=='1'){
+
+            }
+            else{
+
+            }
+        }
+
+    }
 
     string usuario;
     string contrasena;
