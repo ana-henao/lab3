@@ -5,7 +5,9 @@
 using namespace std;
 string DectoBin(char letra);
 string codificar(string grupo);
-void mostrar(string palabra);
+void mostrar(string palabra, int b);
+string decod(string grupo);
+string codificacionpalabra(string data);
 
 int main()
 {
@@ -15,7 +17,7 @@ int main()
     ifstream infile;
 
     // Se pone de manera explicita la ruta relativa donde se encuentra el archivo
-    infile.open("../lab3/main/prueba.txt");
+    infile.open("../funcion/BD/Sudo.txt");
 
     // Se comprueba si el archivo fue abierto exitosamente
     if (!infile.is_open())
@@ -24,38 +26,63 @@ int main()
       exit(1);
     }
 
-    cout << "Leyendo el archivo" << endl;
+    string user="";
+    string contra="";
+
+    while (!infile.eof()){
+
+   // cout << "Leyendo el archivo" << endl;
     infile >> data;
 
     // Se escribe el dato en la pantalla
-    cout << data << endl;
-    cout << "longitud: " << data.length() << endl;
-
-    string palabraBinaria="";
-
-    cout << "Impresion caracter a caracter" << endl;
-    for (unsigned int i = 0; i < data.length(); i++) {
-        cout << data.at(i) << endl;
-
-        palabraBinaria=palabraBinaria+DectoBin(data.at(i));
-    }
-
-    mostrar(palabraBinaria);
+   // cout << data << endl;
+    //cout << "longitud: " << data.length() << endl;
 
 
-    string palabraCodificada="";
-    for (int i=0; i<palabraBinaria.length()/4; i++){//la longitud de palabra binaria se divide entre 4, por que se sabe que se van a tomar de a 4 caracteres.para que en la ultima teracion el string tenga las posiciones necesarias para ietrar
-
-
-        string palabra_="";
-        for (int j=i*4;j<((i*4)+4);j++){
-            palabra_=palabra_+palabraBinaria.at(j);
+    bool controlu=false;
+    for (int i=0; i<data.length(); i++){
+        if (data.at(i)=='u'){
+            controlu=true;
+            continue;
         }
-        palabraCodificada=palabraCodificada+"|"+codificar(palabra_);
+        if (data.at(i)=='c'){
+            controlu=false;
+            continue;
+        }
+        if (controlu){
+            user=user+data.at(i);
+        }
+        else{
+            contra=contra+data.at(i);
+        }
     }
-    cout << palabraCodificada;
+
     // Se cierra el archivo abierto
+    }
     infile.close();
+    //cout << user<< endl;
+    //cout << contra<< endl;
+
+
+    string usuario;
+    string contrasena;
+    cout <<"ingrese usuario administrador: "<< endl;
+    cin >> usuario;
+    cout << "ingrese contrasena: "<< endl;
+    cin >> contrasena;
+    usuario=codificacionpalabra(usuario);
+    contrasena=codificacionpalabra(contrasena);
+
+    //cout <<"usuario: "<< codificacionpalabra(usuario)<< endl;
+    //cout<<"contraseña: "<<codificacionpalabra(contrasena)<< endl;
+
+    if (user==usuario && contra==contrasena){
+           cout << "autenticacion valida."<< endl;
+    }
+    else{
+        cout<<"contrasena o usuario erroneo."<< endl;
+    }
+
 
     return 0;
 }
@@ -85,17 +112,51 @@ string codificar(string grupo){//toma el ultimo dato y lo pone al incicio
 
 }
 
-void mostrar(string palabra){
+void mostrar(string palabra, int b){
 
     cout<<endl;
-    for(int i=0; i<palabra.length()/8;i++){
+    for(unsigned int i=0; i<palabra.length()/b;i++){
 
         string palabra_="";
-        for (int j=i*8;j<((i*8)+8);j++){
+        for (unsigned int j=i*b;j<((i*b)+b);j++){
             palabra_=palabra_+palabra.at(j);
         }
         //string palabra_=palabra.substr(8,16);
         cout<<palabra_<<"|";
 
         }
+}
+
+string decod(string grupo){
+    char primer=grupo.at(0);
+    string salida=grupo.substr(1,4)+primer;
+    return salida;
+
+}
+
+string codificacionpalabra(string data){
+    string palabraBinaria="";
+
+
+    for (unsigned int i = 0; i < data.length(); i++) {
+        //cout << data.at(i) << endl;
+
+        palabraBinaria=palabraBinaria+DectoBin(data.at(i));
+    }
+
+    //mostrar(palabraBinaria, 8);
+
+     cout << endl;
+    string palabraCodificada="";
+    for (unsigned int i=0; i<palabraBinaria.length()/4; i++){//la longitud de palabra binaria se divide entre 4, por que se sabe que se van a tomar de a 4 caracteres.para que en la ultima teracion el string tenga las posiciones necesarias para ietrar
+        string palabra_="";
+        for (unsigned int j=i*4;j<((i*4)+4);j++){
+            palabra_=palabra_+palabraBinaria.at(j);
+        }
+        palabraCodificada=palabraCodificada+codificar(palabra_);
+    }
+
+    //mostrar(palabraCodificada, 4);
+
+    return palabraCodificada;
 }
