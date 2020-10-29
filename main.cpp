@@ -8,121 +8,99 @@ string codificar(string grupo);
 void mostrar(string palabra, int b);
 string decod(string grupo);
 string codificacionpalabra(string data);
+void escritura(string data);
+void lecturaSudo(string *user, string *contra);
+void lecturausuario(string *datain);
+
 
 int main()
 {
-    string data;
 
-    // Abre el archivo en modo lectura
-    ifstream infile;
-
-    // Se pone de manera explicita la ruta relativa donde se encuentra el archivo
-    infile.open("../funcion/BD/Sudo.txt");
-
-    // Se comprueba si el archivo fue abierto exitosamente
-    if (!infile.is_open())
-    {
-      cout << "Error abriendo el archivo" << endl;
-      exit(1);
-    }
-
-    string user="";
-    string contra="";
-
-    while (!infile.eof()){
-
-   // cout << "Leyendo el archivo" << endl;
-    infile >> data;
-
-    // Se escribe el dato en la pantalla
-   // cout << data << endl;
-    //cout << "longitud: " << data.length() << endl;
-
-
-    bool controlu=false;
-    for (int i=0; i<data.length(); i++){
-        if (data.at(i)=='u'){
-            controlu=true;
-            continue;
-        }
-        if (data.at(i)=='c'){
-            controlu=false;
-            continue;
-        }
-        if (controlu){
-            user=user+data.at(i);
-        }
-        else{
-            contra=contra+data.at(i);
-        }
-    }
-
-    // Se cierra el archivo abierto
-    }
-    infile.close();
-    //cout << user<< endl;
-    //cout << contra<< endl;
 //menu
-    int opcion;
-    int cedu;
-    int clave;
-    int saldo;
+    int opcion=0;
+    string cedu;
+    string clave;
+    string saldo;
     int cedula;
     int con;
     int opci;
-    cout << "bienvenido al cajero.";
-    cout<<"menu: "<< endl;
-    cout <<"Desea ingresar como: 1.Administrador   2.Usuario";
-    cin >> opcion;
-    while (opcion=='1' or opcion=='2'){
-        if(opcion=='1'){
-            cout << "registro de usuarios: ";
-            cout << "Ingrese la cedula del usuario: "<< endl;
-            cin >> cedu;
-            cout << "Ingrese la clave del usuario: " << endl;
-            cin >> clave;
-            cout << "Ingrese el saldo del usuario: "<< endl;
-            cin >> saldo;
+    string user;
+    string contra;
+
+
+    lecturaSudo(&user, &contra);
+    while (opcion<3){
+        cout << "bienvenido al cajero.";
+        cout<<"menu: "<< endl;
+        cout <<"Desea ingresar como: 1.Administrador   2.Usuario  3.Salir";
+        cin >> opcion;
+        if(opcion==1){
+            string usuario;
+            string contrasena;
+            cout <<"ingrese usuario administrador: "<< endl;
+            cin >> usuario;
+            cout << "ingrese contrasena: "<< endl;
+            cin >> contrasena;
+            usuario=codificacionpalabra(usuario);
+            contrasena=codificacionpalabra(contrasena);
+
+            //cout <<"usuario: "<< codificacionpalabra(usuario)<< endl;
+            //cout<<"contraseña: "<<codificacionpalabra(contrasena)<< endl;
+
+            if (user==usuario && contra==contrasena){
+                   cout << "autenticacion valida."<< endl;
+                   string datain="";
+                   lecturausuario(&datain);
+                   datain=datain+'\n';
+                   cout << "registro de usuarios: ";
+                   cout << "Ingrese la cedula del usuario: "<< endl;
+                   cin >> cedu;
+                   datain=datain+cedu;
+                   cout << "Ingrese la clave del usuario: " << endl;
+                   cin >> clave;
+                   datain=datain+','+clave;
+                   cout << "Ingrese el saldo del usuario: "<< endl;
+                   cin >> saldo;
+                   datain=datain+','+saldo;
+                   escritura(datain);
+            }
+            else{
+                cout<<"contrasena o usuario erroneo."<< endl;
+            }
+
 
         }
-        else if(opcion=='2'){
+        else if(opcion==2){
             cout << "Ingrese al sistema: "<< endl;
             cout << "Ingrese su numero de cedula: ";
             cin >> cedula;
             cout << "Ingrese su clave: "<< endl;
             cin >> con;
             cout << "acceso aceptado.";
-            cout << "opciones: 1.Consutar saldo  2.Retirar dinero"<< endl;
-            cin >> opci;
-            if (opci=='1'){
 
+            cout << "opciones: 1.Consutar saldo  2.Retirar dinero  3.Volver al menu"<< endl;
+            cin >> opci;
+            if (opci==1){
+
+            }
+            else if(opci==2){
+
+            }
+            else if(opci==3){
+                cout << "Volviendo al menu principal."<< endl;
             }
             else{
-
+                cout<<"La opcion ingresada no existe."<< endl;
             }
         }
+        else if(opcion==3){
+            cout << "Saliendo del cajero."<< endl;
+        }
+        else{
+            cout <<"La opcion ingresada no existe."<< endl;
+        }
 
-    }
-
-    string usuario;
-    string contrasena;
-    cout <<"ingrese usuario administrador: "<< endl;
-    cin >> usuario;
-    cout << "ingrese contrasena: "<< endl;
-    cin >> contrasena;
-    usuario=codificacionpalabra(usuario);
-    contrasena=codificacionpalabra(contrasena);
-
-    //cout <<"usuario: "<< codificacionpalabra(usuario)<< endl;
-    //cout<<"contraseña: "<<codificacionpalabra(contrasena)<< endl;
-
-    if (user==usuario && contra==contrasena){
-           cout << "autenticacion valida."<< endl;
-    }
-    else{
-        cout<<"contrasena o usuario erroneo."<< endl;
-    }
-
+  }
 
     return 0;
 }
@@ -199,4 +177,115 @@ string codificacionpalabra(string data){
     //mostrar(palabraCodificada, 4);
 
     return palabraCodificada;
+}
+void escritura(string data){
+
+
+    // abrir un archivo en modo escritura
+    ofstream outfile;
+
+    // Se pone de manera explicita la ruta relativa donde se encuentra el archivo
+    outfile.open("../funcion/BD/Usuarios.txt");
+
+    // Se comprueba si el archivo fue abierto exitosamente
+    if (!outfile.is_open())
+    {
+      cout << "Error abriendo el archivo" << endl;
+      exit(1);
+    }
+
+
+    // Se escribe la edad en el archivo
+    outfile << data << endl;
+
+    // Se cierra el archivo
+    outfile.close();
+
+
+}
+
+void lecturaSudo(string *user, string *contra){
+    string data;
+
+    // Abre el archivo en modo lectura
+    ifstream infile;
+
+    // Se pone de manera explicita la ruta relativa donde se encuentra el archivo
+    infile.open("../funcion/BD/Sudo.txt");
+
+    // Se comprueba si el archivo fue abierto exitosamente
+    if (!infile.is_open())
+    {
+      cout << "Error abriendo el archivo" << endl;
+      exit(1);
+    }
+
+    while (!infile.eof()){
+
+   // cout << "Leyendo el archivo" << endl;
+    infile >> data;
+
+    // Se escribe el dato en la pantalla
+   // cout << data << endl;
+    //cout << "longitud: " << data.length() << endl;
+
+
+    bool controlu=false;
+    for (int i=0; i<data.length(); i++){
+        if (data.at(i)=='u'){
+            controlu=true;
+            continue;
+        }
+        if (data.at(i)=='c'){
+            controlu=false;
+            continue;
+        }
+        if (controlu){
+            *user=*user+data.at(i);
+        }
+        else{
+            *contra=*contra+data.at(i);
+        }
+    }
+
+    // Se cierra el archivo abierto
+    }
+    infile.close();
+    //cout << user<< endl;
+    //cout << contra<< endl;
+
+}
+
+void lecturausuario(string *datain){
+    string data;
+    ifstream infile;
+
+    // Se pone de manera explicita la ruta relativa donde se encuentra el archivo
+    infile.open("../funcion/BD/Usuarios.txt");
+
+    // Se comprueba si el archivo fue abierto exitosamente
+    if (!infile.is_open())
+    {
+      cout << "Error abriendo el archivo" << endl;
+      exit(1);
+    }
+
+    while (!infile.eof()){
+
+   // cout << "Leyendo el archivo" << endl;
+    infile >> data;
+
+    // Se escribe el dato en la pantalla
+   // cout << data << endl;
+    //cout << "longitud: " << data.length() << endl;
+
+    for (int i=0; i<data.length(); i++){
+        *datain=*datain+data.at(i);
+
+    }
+
+    // Se cierra el archivo abierto
+    }
+    infile.close();
+
 }
