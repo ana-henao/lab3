@@ -1,6 +1,7 @@
 #include <iostream>
 #include<fstream>
 #include<math.h>
+#include<cstdlib>
 
 using namespace std;
 string DectoBin(char letra);
@@ -11,7 +12,11 @@ string codificacionpalabra(string data);
 void escritura(string data);
 void lecturaSudo(string *user, string *contra);
 void lecturausuario(string *datain);
-
+string buscarusuario(string usuario);
+void separar(string palabra, string *dataout);
+string BintoDec(string palabra);
+string decodificarpalabra(string data);
+void cambiarsaldo(string nuevovalor[3]);
 
 int main()
 {
@@ -21,8 +26,8 @@ int main()
     string cedu;
     string clave;
     string saldo;
-    int cedula;
-    int con;
+    string cedula;
+    string con;
     int opci;
     string user;
     string contra;
@@ -30,9 +35,9 @@ int main()
 
     lecturaSudo(&user, &contra);
     while (opcion<3){
-        cout << "bienvenido al cajero.";
+        cout << "bienvenido al cajero."<<endl;
         cout<<"menu: "<< endl;
-        cout <<"Desea ingresar como: 1.Administrador   2.Usuario  3.Salir";
+        cout <<"Desea ingresar como: 1.Administrador   2.Usuario  3.Salir"<<endl;
         cin >> opcion;
         if(opcion==1){
             string usuario;
@@ -51,17 +56,25 @@ int main()
                    cout << "autenticacion valida."<< endl;
                    string datain="";
                    lecturausuario(&datain);
-                   datain=datain+'\n';
+                   //cout << datain<< endl;
+
+                   //cout << datain<< endl;
                    cout << "registro de usuarios: ";
                    cout << "Ingrese la cedula del usuario: "<< endl;
                    cin >> cedu;
+                   cedu=codificacionpalabra(cedu);
                    datain=datain+cedu;
+                   //cout << datain<< endl;
                    cout << "Ingrese la clave del usuario: " << endl;
                    cin >> clave;
+                   clave=codificacionpalabra(clave);
                    datain=datain+','+clave;
+                   //cout << datain<< endl;
                    cout << "Ingrese el saldo del usuario: "<< endl;
                    cin >> saldo;
+                   saldo=codificacionpalabra(saldo);
                    datain=datain+','+saldo;
+                   //cout << datain<< endl;
                    escritura(datain);
             }
             else{
@@ -71,27 +84,76 @@ int main()
 
         }
         else if(opcion==2){
+            string datausuario="";
             cout << "Ingrese al sistema: "<< endl;
             cout << "Ingrese su numero de cedula: ";
             cin >> cedula;
-            cout << "Ingrese su clave: "<< endl;
-            cin >> con;
-            cout << "acceso aceptado.";
-
-            cout << "opciones: 1.Consutar saldo  2.Retirar dinero  3.Volver al menu"<< endl;
-            cin >> opci;
-            if (opci==1){
-
-            }
-            else if(opci==2){
-
-            }
-            else if(opci==3){
-                cout << "Volviendo al menu principal."<< endl;
+            cedula=codificacionpalabra(cedula);
+            datausuario=buscarusuario(cedula);
+            if(datausuario==""){
+                cout<< "El usuario no existe.";
             }
             else{
-                cout<<"La opcion ingresada no existe."<< endl;
+                string usuariosplit[3];
+
+                separar(datausuario, &usuariosplit[0]);
+                cout << "Ingrese su clave: "<< endl;
+                cin >> con;
+                con=codificacionpalabra(con);
+                if(con==usuariosplit[1]){
+                    cout << "acceso aceptado.";
+
+                    cout << "opciones: 1.Consutar saldo  2.Retirar dinero  3.Volver al menu"<< endl;
+                    cin >> opci;
+                    string saldo="0";
+                    if (opci==1){
+                        string saldot=decodificarpalabra(usuariosplit[2]);
+                        int valort=atoi(saldot.c_str())-1000;
+                        if(valort<0){
+                            cout <<"Usted no tiene saldo suficiente para realizar este proceso."<< endl;
+                        }
+                        else{
+                            usuariosplit[2]=codificacionpalabra(to_string(valort));//convierte entero a string
+                            cambiarsaldo(usuariosplit);
+                            saldo=decodificarpalabra(usuariosplit[2]);
+                            cout << "su saldo es: "<< saldo<< endl;
+
+                        }
+
+                    }
+
+                    else if(opci==2){
+                        string saldot=decodificarpalabra(usuariosplit[2]);
+                        int valort=atoi(saldot.c_str())-1000;
+                        if(valort<0){
+                            cout <<"Usted no tiene saldo suficiente para realizar este proceso."<< endl;
+                        }
+                        else{
+
+                            saldo=decodificarpalabra(usuariosplit[2]);
+                            int valor;
+                            cout<< "Ingrese el valor a retirar: "<< endl;
+                            cin >> valor;
+                            valor=atoi(saldo.c_str())-valor-1000;//convierte string a entero
+                            usuariosplit[2]=codificacionpalabra(to_string(valor));//convierte entero a string
+                            cambiarsaldo(usuariosplit);
+                            cout <<"Su nuevo saldo es: "<<valor << endl;
+
+                        }
+                    }
+                    else if(opci==3){
+                        cout << "Volviendo al menu principal."<< endl;
+                    }
+                    else{
+                        cout<<"La opcion ingresada no existe."<< endl;
+                    }
+
+                }
+                else {
+                    cout<< "contraseña invalida."<< endl;
+                }
             }
+
         }
         else if(opcion==3){
             cout << "Saliendo del cajero."<< endl;
@@ -139,7 +201,6 @@ void mostrar(string palabra, int b){
         for (unsigned int j=i*b;j<((i*b)+b);j++){
             palabra_=palabra_+palabra.at(j);
         }
-        //string palabra_=palabra.substr(8,16);
         cout<<palabra_<<"|";
 
         }
@@ -157,12 +218,8 @@ string codificacionpalabra(string data){
 
 
     for (unsigned int i = 0; i < data.length(); i++) {
-        //cout << data.at(i) << endl;
-
         palabraBinaria=palabraBinaria+DectoBin(data.at(i));
     }
-
-    //mostrar(palabraBinaria, 8);
 
      cout << endl;
     string palabraCodificada="";
@@ -193,7 +250,6 @@ void escritura(string data){
       cout << "Error abriendo el archivo" << endl;
       exit(1);
     }
-
 
     // Se escribe la edad en el archivo
     outfile << data << endl;
@@ -251,8 +307,6 @@ void lecturaSudo(string *user, string *contra){
     // Se cierra el archivo abierto
     }
     infile.close();
-    //cout << user<< endl;
-    //cout << contra<< endl;
 
 }
 
@@ -276,16 +330,155 @@ void lecturausuario(string *datain){
     infile >> data;
 
     // Se escribe el dato en la pantalla
-   // cout << data << endl;
-    //cout << "longitud: " << data.length() << endl;
+//   cout << data << endl;
+//   cout << "longitud: " << data.length() << endl;
+
 
     for (int i=0; i<data.length(); i++){
         *datain=*datain+data.at(i);
-
+        //cout<<*datain<< endl;
     }
+    *datain=*datain+'\n';
 
     // Se cierra el archivo abierto
     }
     infile.close();
 
+}
+string buscarusuario(string usuario){
+    string data;
+    ifstream infile;
+    string datausuario="";
+
+    // Se pone de manera explicita la ruta relativa donde se encuentra el archivo
+    infile.open("../funcion/BD/Usuarios.txt");
+
+    // Se comprueba si el archivo fue abierto exitosamente
+    if (!infile.is_open())
+    {
+      cout << "Error abriendo el archivo" << endl;
+      exit(1);
+    }
+
+    while (!infile.eof()){
+
+   // cout << "Leyendo el archivo" << endl;
+    infile >> data;
+
+    // Se escribe el dato en la pantalla
+    string usuariot="";
+    for (int i=0; i<data.length(); i++){
+        if (data.at(i)==','){
+            break;
+        }
+        else{
+            usuariot=usuariot+data.at(i);
+        }
+
+    }
+    if (usuariot==usuario){
+        datausuario=data;
+        break;
+    }
+    // Se cierra el archivo abierto
+    }
+    infile.close();
+    return datausuario;
+}
+void separar(string palabra, string *dataout){
+    int x=0;
+    for (int i=0; i<palabra.length(); i++){
+        if (palabra.at(i)==','){
+            x++;
+        }
+        else{
+            *(dataout+x)=*(dataout+x)+palabra.at(i);
+        }
+    }
+}
+
+string decodificarpalabra(string data){
+
+    string palabraBinaria=data;
+    string palabraCodificada="";
+
+    for (unsigned int i=0; i<palabraBinaria.length()/4; i++){//la longitud de palabra binaria se divide entre 4, por que se sabe que se van a tomar de a 4 caracteres.para que en la ultima teracion el string tenga las posiciones necesarias para ietrar
+        string palabra_="";
+        for (unsigned int j=i*4;j<((i*4)+4);j++){
+            palabra_=palabra_+palabraBinaria.at(j);
+        }
+        palabraCodificada=palabraCodificada+decod(palabra_);
+    }
+
+    //mostrar(palabraBinaria, 8);
+    palabraBinaria=BintoDec(palabraCodificada);
+    //mostrar(palabraCodificada, 4);
+
+    return palabraBinaria;
+}
+
+string BintoDec(string binario){
+    string palabra="";
+    for(int i=0; i<binario.length()/8; i++){
+        string palabra_="";
+        for (unsigned int j=i*8;j<((i*8)+8);j++){
+            palabra_=palabra_+binario.at(j);
+        }
+
+        int sumaAscii=0;
+        for(int j=7; j>=0; j--){//codificar a binario(8 bits 0-7)
+            if(palabra_.at(7-j)=='1'){
+                sumaAscii+=pow(2,j);
+            }
+        }
+
+        char x=sumaAscii;
+        palabra=palabra+x;
+    }
+    return palabra;
+}
+
+void cambiarsaldo(string nuevovalor[3]){
+    string usuario=nuevovalor[0];
+    string data;
+    ifstream infile;
+    string datausuario="";
+
+    // Se pone de manera explicita la ruta relativa donde se encuentra el archivo
+    infile.open("../funcion/BD/Usuarios.txt");
+
+    // Se comprueba si el archivo fue abierto exitosamente
+    if (!infile.is_open())
+    {
+      cout << "Error abriendo el archivo" << endl;
+      exit(1);
+    }
+
+    while (!infile.eof()){
+
+   // cout << "Leyendo el archivo" << endl;
+    infile >> data;
+
+    string usuariot="";
+    for (int i=0; i<data.length(); i++){
+        if (data.at(i)==','){
+            break;
+        }
+        else{
+            usuariot=usuariot+data.at(i);
+        }
+     }
+    if (usuariot==usuario){
+       datausuario+=nuevovalor[0]+','+nuevovalor[1]+','+nuevovalor[2];
+
+    }
+
+    datausuario+='\n';
+
+    // Se cierra el archivo abierto
+    }
+
+    infile.close();
+
+    escritura(datausuario);
 }
